@@ -13,8 +13,6 @@
 namespace posternak_a_count_different_char_in_two_lines {
 
 class PosternakACountDifferentCharInTwoLinesFuncTests : public ppc::util::BaseRunFuncTests<InType, OutType, TestType> {
- private:
-  OutType expected_output_{};
 
  public:
   static std::string PrintTestParam(const TestType &test_param) {
