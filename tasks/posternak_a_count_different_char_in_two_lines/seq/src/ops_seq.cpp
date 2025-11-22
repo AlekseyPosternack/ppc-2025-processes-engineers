@@ -1,11 +1,9 @@
 #include "posternak_a_count_different_char_in_two_lines/seq/include/ops_seq.hpp"
 
-#include <numeric>
 #include <string>
 #include <utility>
 
 #include "posternak_a_count_different_char_in_two_lines/common/include/common.hpp"
-#include "util/include/util.hpp"
 
 namespace posternak_a_count_different_char_in_two_lines {
 
@@ -34,8 +32,8 @@ bool PosternakACountDifferentCharInTwoLinesSEQ::RunImpl() {
   int diff_count = 0;
   int min = 0;
   int max = 0;
-  int s1_len = s1.length();
-  int s2_len = s2.length();
+  size_t s1_len = s1.length();
+  size_t s2_len = s2.length();
   if (s1_len >= s2_len) {
     min = s2_len;
     max = s1_len;

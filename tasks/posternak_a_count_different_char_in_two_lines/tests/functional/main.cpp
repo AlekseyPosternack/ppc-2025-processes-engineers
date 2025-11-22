@@ -1,16 +1,8 @@
 #include <gtest/gtest.h>
 #include <stb/stb_image.h>
 
-#include <algorithm>
-#include <array>
-#include <cstddef>
-#include <cstdint>
-#include <numeric>
-#include <stdexcept>
 #include <string>
-#include <tuple>
 #include <utility>
-#include <vector>
 
 #include "posternak_a_count_different_char_in_two_lines/common/include/common.hpp"
 #include "posternak_a_count_different_char_in_two_lines/mpi/include/ops_mpi.hpp"
@@ -21,6 +13,9 @@
 namespace posternak_a_count_different_char_in_two_lines {
 
 class PosternakACountDifferentCharInTwoLinesFuncTests : public ppc::util::BaseRunFuncTests<InType, OutType, TestType> {
+ private:
+  OutType expected_output_{};
+
  public:
   static std::string PrintTestParam(const TestType &test_param) {
     return std::to_string(std::get<0>(test_param)) + "_" + std::get<1>(test_param);

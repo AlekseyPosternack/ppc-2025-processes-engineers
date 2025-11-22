@@ -12,17 +12,17 @@ namespace posternak_a_count_different_char_in_two_lines {
 
 class PosternakARunPerfTestProcesses : public ppc::util::BaseRunPerfTests<InType, OutType> {
   const int kCount_ = 1000000;
-  std::string s1 = "";
-  std::string s2 = "";
-  InType input_data_{};
+  std::string first_string = "";
+  std::string second_string = "";
+  InType input_data_;
   OutType expected_output_{};
 
   void SetUp() override {
     for (int i = 0; i < kCount_; i++) {
-      s1 += "string";
-      s2 += "strong";
+      first_string += "string";
+      second_string += "strong";
     }
-    input_data_ = std::make_pair(s1, s2);
+    input_data_ = std::make_pair(first_string, second_string);
     expected_output_ = kCount_;
   }
 

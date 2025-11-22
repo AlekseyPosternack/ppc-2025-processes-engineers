@@ -1,15 +1,12 @@
 #include "posternak_a_count_different_char_in_two_lines/mpi/include/ops_mpi.hpp"
 
-#include <math.h>
 #include <mpi.h>
 
-#include <numeric>
+#include <cmath>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "posternak_a_count_different_char_in_two_lines/common/include/common.hpp"
-#include "util/include/util.hpp"
 
 namespace posternak_a_count_different_char_in_two_lines {
 
@@ -44,8 +41,8 @@ bool PosternakACountDifferentCharInTwoLinesMPI::RunImpl() {
   std::string &s1 = lines.first;
   std::string &s2 = lines.second;
 
-  int s1_len = lines.first.length();
-  int s2_len = lines.second.length();
+  size_t s1_len = lines.first.length();
+  size_t s2_len = lines.second.length();
 
   int min_len = 0;
   if (s1_len >= s2_len) {
@@ -71,7 +68,7 @@ bool PosternakACountDifferentCharInTwoLinesMPI::RunImpl() {
 
   MPI_Allreduce(&process_count, &count, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
 
-  count += std::abs(s1_len - s2_len);
+  count += std::abs(static_cast<int>(s1_len) - static_cast<int>(s2_len));
   GetOutput() = count;
 
   return true;
