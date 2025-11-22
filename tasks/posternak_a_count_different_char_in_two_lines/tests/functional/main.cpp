@@ -1,7 +1,10 @@
 #include <gtest/gtest.h>
 #include <stb/stb_image.h>
 
+#include <array>
+#include <cstddef>
 #include <string>
+#include <tuple>
 #include <utility>
 
 #include "posternak_a_count_different_char_in_two_lines/common/include/common.hpp"
@@ -64,7 +67,7 @@ class PosternakACountDifferentCharInTwoLinesFuncTests : public ppc::util::BaseRu
 
  private:
   InType input_data_;
-  OutType expected_output_;
+  OutType expected_output_{};
 };
 
 namespace {

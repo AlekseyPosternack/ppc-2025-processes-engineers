@@ -1,5 +1,6 @@
 #include "posternak_a_count_different_char_in_two_lines/seq/include/ops_seq.hpp"
 
+#include <cstddef>
 #include <string>
 #include <utility>
 
