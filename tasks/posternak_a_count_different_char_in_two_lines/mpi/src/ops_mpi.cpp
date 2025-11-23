@@ -45,23 +45,23 @@ bool PosternakACountDifferentCharInTwoLinesMPI::RunImpl() {
   size_t s1_len = lines.first.length();
   size_t s2_len = lines.second.length();
 
-  int min_len = 0;
+  size_t min_len = 0;
   if (s1_len >= s2_len) {
     min_len = s2_len;
   } else {
     min_len = s1_len;
   }
 
-  int process_work_size = min_len / size;
-  int start = rank * process_work_size;
-  int end = start + process_work_size;
+  size_t process_work_size = min_len / size;
+  size_t start = rank * process_work_size;
+  size_t end = start + process_work_size;
 
   if (rank == size - 1) {
     end = min_len;
   }
 
   int process_count = 0;
-  for (int i = start; i < end; i++) {
+  for (size_t i = start; i < end; i++) {
     if (s1[i] != s2[i]) {
       process_count++;
     }
