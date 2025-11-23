@@ -30,7 +30,7 @@ bool PosternakACountDifferentCharInTwoLinesSEQ::RunImpl() {
   std::string s1 = lines.first;
   std::string s2 = lines.second;
 
-  size_t diff_count = 0;
+  int diff_count = 0;
   size_t min = 0;
   size_t max = 0;
   size_t s1_len = s1.length();
@@ -48,7 +48,7 @@ bool PosternakACountDifferentCharInTwoLinesSEQ::RunImpl() {
     }
   }
 
-  diff_count += (max - min);
+  diff_count += static_cast<int>(max - min);
   GetOutput() = diff_count;
   return true;
 }

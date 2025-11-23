@@ -70,7 +70,7 @@ bool PosternakACountDifferentCharInTwoLinesMPI::RunImpl() {
   MPI_Allreduce(&process_count, &count, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
 
   count += std::abs(static_cast<int>(s1_len) - static_cast<int>(s2_len));
-  GetOutput() = static_cast<int>(count);
+  GetOutput() = count;
 
   return true;
 }
