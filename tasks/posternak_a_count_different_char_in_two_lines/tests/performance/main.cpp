@@ -11,7 +11,7 @@
 namespace posternak_a_count_different_char_in_two_lines {
 
 class PosternakARunPerfTestProcesses : public ppc::util::BaseRunPerfTests<InType, OutType> {
-  const int kCount_ = 1000000;
+  const int kCount_ = 10000000;
   std::string first_string_;
   std::string second_string_;
   InType input_data_;
