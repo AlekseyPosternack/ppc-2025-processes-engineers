@@ -2,6 +2,7 @@
 
 #include <mpi.h>
 
+#include <algorithm>
 #include <cmath>
 #include <string>
 #include <utility>
@@ -38,7 +39,8 @@ bool PosternakACountDifferentCharInTwoLinesMPI::RunImpl() {
   std::string s1;
   std::string s2;
 
-  int s1_len, s2_len;
+  int s1_len = 0;
+  int s2_len = 0;
 
   if (rank == 0) {
     std::pair<std::string, std::string> &lines = GetInput();
@@ -83,14 +85,14 @@ bool PosternakACountDifferentCharInTwoLinesMPI::RunImpl() {
     s1 = s1_proc_parts[0];
     s2 = s2_proc_parts[0];
   } else {
-    int part_len;
+    int part_len = 0;
     MPI_Recv(&part_len, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
     s1.resize(part_len);
     s2.resize(part_len);
 
-    MPI_Recv(&s1[0], part_len, MPI_CHAR, 0, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-    MPI_Recv(&s2[0], part_len, MPI_CHAR, 0, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    MPI_Recv(s1.data(), part_len, MPI_CHAR, 0, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    MPI_Recv(s2.data(), part_len, MPI_CHAR, 0, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
   }
 
   int process_count = 0;
