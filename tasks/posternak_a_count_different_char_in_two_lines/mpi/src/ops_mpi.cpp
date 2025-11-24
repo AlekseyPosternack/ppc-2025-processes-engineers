@@ -2,10 +2,10 @@
 
 #include <mpi.h>
 
-#include <array>
 #include <cmath>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "posternak_a_count_different_char_in_two_lines/common/include/common.hpp"
 
@@ -38,61 +38,71 @@ bool PosternakACountDifferentCharInTwoLinesMPI::RunImpl() {
   std::string s1;
   std::string s2;
 
-  int count = 0;
-
   if (rank == 0) {
     std::pair<std::string, std::string> &lines = GetInput();
     s1 = lines.first;
     s2 = lines.second;
   }
 
-  std::array<int, 2> string_lens = {0, 0};
+  int s1_len = static_cast<int>(s1.length());
+  int s2_len = static_cast<int>(s2.length());
+
+  std::vector<std::string> s1_proc_parts;
+  std::vector<std::string> s2_proc_parts;
+
   if (rank == 0) {
-    string_lens[0] = static_cast<int>(s1.length());
-    string_lens[1] = static_cast<int>(s2.length());
-  }
+    int min_len = std::min(s1_len, s2_len);
 
-  MPI_Bcast(string_lens.data(), 2, MPI_INT, 0, MPI_COMM_WORLD);
+    int local_len = min_len / size;
+    int remainder = min_len % size;
 
-  int s1_len = string_lens[0];
-  int s2_len = string_lens[1];
+    int start = 0;
+    for (int i = 0; i < size; i++) {
+      int part_len = local_len;
+      if (i == size - 1) {
+        part_len += remainder;
+      }
 
-  int min_len = 0;
-  if (s1_len >= s2_len) {
-    min_len = s2_len;
+      s1_proc_parts.push_back(s1.substr(start, part_len));
+      s2_proc_parts.push_back(s2.substr(start, part_len));
+      start += part_len;
+    }
+
+    for (int proc = 1; proc < size; proc++) {
+      int part_len = static_cast<int>(s1_proc_parts[proc].length());
+
+      MPI_Send(&part_len, 1, MPI_INT, proc, 0, MPI_COMM_WORLD);
+      MPI_Send(s1_proc_parts[proc].c_str(), part_len, MPI_CHAR, proc, 1, MPI_COMM_WORLD);
+      MPI_Send(s2_proc_parts[proc].c_str(), part_len, MPI_CHAR, proc, 2, MPI_COMM_WORLD);
+    }
+
+    s1 = s1_proc_parts[0];
+    s2 = s2_proc_parts[0];
   } else {
-    min_len = s1_len;
-  }
+    int part_len;
+    MPI_Recv(&part_len, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-  if (rank != 0) {
-    s1.resize(s1_len);
-    s2.resize(s2_len);
-  }
+    s1.resize(part_len);
+    s2.resize(part_len);
 
-  MPI_Bcast(s1.data(), s1_len, MPI_CHAR, 0, MPI_COMM_WORLD);
-  MPI_Bcast(s2.data(), s2_len, MPI_CHAR, 0, MPI_COMM_WORLD);
-
-  int process_workplace = min_len / size;
-  int start_place = rank * process_workplace;
-  int end_place = start_place + process_workplace;
-
-  if (rank == size - 1) {
-    end_place = min_len;
+    MPI_Recv(&s1[0], part_len, MPI_CHAR, 0, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+    MPI_Recv(&s2[0], part_len, MPI_CHAR, 0, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
   }
 
   int process_count = 0;
-  for (int i = start_place; i < end_place; i++) {
+  int part_len = static_cast<int>(s1.length());
+  for (int i = 0; i < part_len; i++) {
     if (s1[i] != s2[i]) {
       process_count++;
     }
   }
 
+  int count = 0;
   MPI_Allreduce(&process_count, &count, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
 
   count += std::abs(s1_len - s2_len);
   GetOutput() = count;
 
-  MPI_Barrier(MPI_COMM_WORLD);
   return true;
 }
 
