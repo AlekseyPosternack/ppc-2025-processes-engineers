@@ -3,7 +3,6 @@
 #include <mpi.h>
 
 #include <cmath>
-#include <cstddef>
 #include <string>
 #include <utility>
 
@@ -35,8 +34,8 @@ bool PosternakACountDifferentCharInTwoLinesMPI::RunImpl() {
   int size = 0;
   MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-  std::string s1 = "";
-  std::string s2 = "";
+  std::string s1;
+  std::string s2;
 
   int count = 0;
 
@@ -46,13 +45,13 @@ bool PosternakACountDifferentCharInTwoLinesMPI::RunImpl() {
     s2 = lines.second;
   }
 
-  int string_lens[2] = {0, 0};
+  std::array<int, 2> string_lens = {0, 0};
   if (rank == 0) {
-    string_lens[0] = s1.length();
-    string_lens[1] = s2.length();
+    string_lens[0] = static_cast<int>(s1.length());
+    string_lens[1] = static_cast<int>(s2.length());
   }
 
-  MPI_Bcast(string_lens, 2, MPI_INT, 0, MPI_COMM_WORLD);
+  MPI_Bcast(string_lens.data(), 2, MPI_INT, 0, MPI_COMM_WORLD);
 
   int s1_len = string_lens[0];
   int s2_len = string_lens[1];
@@ -69,8 +68,8 @@ bool PosternakACountDifferentCharInTwoLinesMPI::RunImpl() {
     s2.resize(s2_len);
   }
 
-  MPI_Bcast(&s1[0], s1_len, MPI_CHAR, 0, MPI_COMM_WORLD);
-  MPI_Bcast(&s2[0], s2_len, MPI_CHAR, 0, MPI_COMM_WORLD);
+  MPI_Bcast(s1.data(), s1_len, MPI_CHAR, 0, MPI_COMM_WORLD);
+  MPI_Bcast(s2.data(), s2_len, MPI_CHAR, 0, MPI_COMM_WORLD);
 
   int process_workplace = min_len / size;
   int start_place = rank * process_workplace;
