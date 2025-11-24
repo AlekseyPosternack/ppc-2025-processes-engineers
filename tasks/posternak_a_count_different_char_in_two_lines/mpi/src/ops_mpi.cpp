@@ -38,14 +38,18 @@ bool PosternakACountDifferentCharInTwoLinesMPI::RunImpl() {
   std::string s1;
   std::string s2;
 
+  int s1_len, s2_len;
+
   if (rank == 0) {
     std::pair<std::string, std::string> &lines = GetInput();
     s1 = lines.first;
     s2 = lines.second;
+    s1_len = static_cast<int>(s1.length());
+    s2_len = static_cast<int>(s2.length());
   }
 
-  int s1_len = static_cast<int>(s1.length());
-  int s2_len = static_cast<int>(s2.length());
+  MPI_Bcast(&s1_len, 1, MPI_INT, 0, MPI_COMM_WORLD);
+  MPI_Bcast(&s2_len, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
   std::vector<std::string> s1_proc_parts;
   std::vector<std::string> s2_proc_parts;
