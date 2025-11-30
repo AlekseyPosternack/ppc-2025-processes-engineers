@@ -59,7 +59,6 @@
 ```
 - posternak_a_count_different_char_in_two_lines // корень проекта
     - common/include/common.hpp                 // определение типов входных и выходных данных
-    - data                                      // хранилище данных (не использовался в данном проекте)
     - mpi                                       // реализация параллельного алгоритма
         - include/ops_mpi.hpp                   // объявление функций
         - src/ops_mpi.cpp                       // реализация функций
@@ -111,11 +110,13 @@ PPC_NUM_PROC=1,2,4
 ### 7.1 Корректность
 
 Все функциональные тесты были успешно пройдены:
-1. Строки одинаковой длины с различием в 1 символ ("string" и "strong").
-2. Длина первой строки больше длины второй ("stringstring" и "string").
-3. Длина второй строки больше длины первой ("string" и "stringstring").
-4. Одиннаковые строки ("string" и "string"). 
-5. Строки с разным регистром ("string" и "STRING").
+1. Строки одинаковой длины с различием в 1 символ.
+2. Строки разной длины.
+3. Строки с 1 символом.
+4. Одиннаковые строки. 
+5. Строки с цифрами.
+6. Строки со специальными символами.
+7. Длинные строки.
 
 SEQ и MPI версии выдают идентичные результаты для всех тестовых случаев.
 
@@ -162,33 +163,6 @@ SEQ и MPI версии выдают идентичные результаты �
 `ops_seq.cpp:`
 
 ```cpp
-#include "posternak_a_count_different_char_in_two_lines/seq/include/ops_seq.hpp"
-
-#include <cstddef>
-#include <string>
-#include <utility>
-
-#include "posternak_a_count_different_char_in_two_lines/common/include/common.hpp"
-
-namespace posternak_a_count_different_char_in_two_lines {
-
-PosternakACountDifferentCharInTwoLinesSEQ::PosternakACountDifferentCharInTwoLinesSEQ(const InType &in) {
-  SetTypeOfTask(GetStaticTypeOfTask());
-  GetInput() = in;
-  GetOutput() = 0;
-}
-
-bool PosternakACountDifferentCharInTwoLinesSEQ::ValidationImpl() {
-  std::pair<std::string, std::string> &lines = GetInput();
-  std::string s1 = lines.first;
-  std::string s2 = lines.second;
-  return !s1.empty() && !s2.empty();
-}
-
-bool PosternakACountDifferentCharInTwoLinesSEQ::PreProcessingImpl() {
-  return true;
-}
-
 bool PosternakACountDifferentCharInTwoLinesSEQ::RunImpl() {
   std::pair<std::string, std::string> &lines = GetInput();
   std::string s1 = lines.first;
@@ -199,6 +173,7 @@ bool PosternakACountDifferentCharInTwoLinesSEQ::RunImpl() {
   size_t max = 0;
   size_t s1_len = s1.length();
   size_t s2_len = s2.length();
+  // Находим максимальную и минимальную длину строк
   if (s1_len >= s2_len) {
     min = s2_len;
     max = s1_len;
@@ -206,59 +181,22 @@ bool PosternakACountDifferentCharInTwoLinesSEQ::RunImpl() {
     min = s1_len;
     max = s2_len;
   }
+  // Сравниваем символы
   for (size_t i = 0; i < min; i++) {
     if (s1[i] != s2[i]) {
       diff_count++;
     }
   }
-
+  // Учитываем разницу в длине
   diff_count += static_cast<int>(max - min);
   GetOutput() = diff_count;
   return true;
 }
-
-bool PosternakACountDifferentCharInTwoLinesSEQ::PostProcessingImpl() {
-  return true;
-}
-
-}  // namespace posternak_a_count_different_char_in_two_lines
-
 ```
 
 `ops_mpi.cpp:`
 
 ```cpp
-#include "posternak_a_count_different_char_in_two_lines/mpi/include/ops_mpi.hpp"
-
-#include <mpi.h>
-
-#include <algorithm>
-#include <cmath>
-#include <string>
-#include <utility>
-#include <vector>
-
-#include "posternak_a_count_different_char_in_two_lines/common/include/common.hpp"
-
-namespace posternak_a_count_different_char_in_two_lines {
-
-PosternakACountDifferentCharInTwoLinesMPI::PosternakACountDifferentCharInTwoLinesMPI(const InType &in) {
-  SetTypeOfTask(GetStaticTypeOfTask());
-  GetInput() = in;
-  GetOutput() = 0;
-}
-
-bool PosternakACountDifferentCharInTwoLinesMPI::ValidationImpl() {
-  std::pair<std::string, std::string> &lines = GetInput();
-  std::string s1 = lines.first;
-  std::string s2 = lines.second;
-  return !s1.empty() && !s2.empty();
-}
-
-bool PosternakACountDifferentCharInTwoLinesMPI::PreProcessingImpl() {
-  return true;
-}
-
 bool PosternakACountDifferentCharInTwoLinesMPI::RunImpl() {
   int rank = 0;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -272,6 +210,7 @@ bool PosternakACountDifferentCharInTwoLinesMPI::RunImpl() {
   int s1_len = 0;
   int s2_len = 0;
 
+  // Только процесс 0 содержт все исходные данные
   if (rank == 0) {
     std::pair<std::string, std::string> &lines = GetInput();
     s1 = lines.first;
@@ -280,12 +219,15 @@ bool PosternakACountDifferentCharInTwoLinesMPI::RunImpl() {
     s2_len = static_cast<int>(s2.length());
   }
 
+  // Передаем длину строк всем процессам
   MPI_Bcast(&s1_len, 1, MPI_INT, 0, MPI_COMM_WORLD);
   MPI_Bcast(&s2_len, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
+  // Создаем вектора, которые будут хранить равные части строк
   std::vector<std::string> s1_proc_parts;
   std::vector<std::string> s2_proc_parts;
 
+  // Разделяем строки в процессе 0
   if (rank == 0) {
     int min_len = std::min(s1_len, s2_len);
 
@@ -304,6 +246,7 @@ bool PosternakACountDifferentCharInTwoLinesMPI::RunImpl() {
       start += part_len;
     }
 
+    // Рассылаем каждому процессу свою часть строки
     for (int proc = 1; proc < size; proc++) {
       int part_len = static_cast<int>(s1_proc_parts[proc].length());
 
@@ -311,10 +254,11 @@ bool PosternakACountDifferentCharInTwoLinesMPI::RunImpl() {
       MPI_Send(s1_proc_parts[proc].c_str(), part_len, MPI_CHAR, proc, 1, MPI_COMM_WORLD);
       MPI_Send(s2_proc_parts[proc].c_str(), part_len, MPI_CHAR, proc, 2, MPI_COMM_WORLD);
     }
-
+    // Процесс 0 оставлет себе перую часть строки
     s1 = s1_proc_parts[0];
     s2 = s2_proc_parts[0];
   } else {
+    // Получение данных, отправленных процессом 0, другими процессами
     int part_len = 0;
     MPI_Recv(&part_len, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
@@ -325,6 +269,7 @@ bool PosternakACountDifferentCharInTwoLinesMPI::RunImpl() {
     MPI_Recv(s2.data(), part_len, MPI_CHAR, 0, 2, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
   }
 
+  // Параллельное вычисление различных символов
   int process_count = 0;
   int part_len = static_cast<int>(s1.length());
   for (int i = 0; i < part_len; i++) {
@@ -333,6 +278,7 @@ bool PosternakACountDifferentCharInTwoLinesMPI::RunImpl() {
     }
   }
 
+  // Получение общего результата
   int count = 0;
   MPI_Allreduce(&process_count, &count, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
 
@@ -341,11 +287,5 @@ bool PosternakACountDifferentCharInTwoLinesMPI::RunImpl() {
 
   return true;
 }
-
-bool PosternakACountDifferentCharInTwoLinesMPI::PostProcessingImpl() {
-  return true;
-}
-
-}  // namespace posternak_a_count_different_char_in_two_lines
 
 ```

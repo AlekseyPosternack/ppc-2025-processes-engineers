@@ -24,7 +24,6 @@ bool PosternakACountDifferentCharInTwoLinesSEQ::ValidationImpl() {
 bool PosternakACountDifferentCharInTwoLinesSEQ::PreProcessingImpl() {
   return true;
 }
-
 bool PosternakACountDifferentCharInTwoLinesSEQ::RunImpl() {
   std::pair<std::string, std::string> &lines = GetInput();
   std::string s1 = lines.first;
