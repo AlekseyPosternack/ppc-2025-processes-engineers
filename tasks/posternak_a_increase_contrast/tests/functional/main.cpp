@@ -158,8 +158,7 @@ const auto kTestTasksList = std::tuple_cat(ppc::util::AddFuncTask<PosternakAIncr
 
 const auto kGtestValues = ppc::util::ExpandToValues(kTestTasksList);
 
-const auto kPerfTestName =
-    PosternakAIncreaseContrastFuncTests::PrintFuncTestName<PosternakAIncreaseContrastFuncTests>;
+const auto kPerfTestName = PosternakAIncreaseContrastFuncTests::PrintFuncTestName<PosternakAIncreaseContrastFuncTests>;
 
 INSTANTIATE_TEST_SUITE_P(StringTests, PosternakAIncreaseContrastFuncTests, kGtestValues, kPerfTestName);
 

@@ -39,9 +39,9 @@ TEST_P(PosternakAIncreaseContrastPerfTests, RunPerfModes) {
   ExecuteTest(GetParam());
 }
 
-const auto kAllPerfTasks = ppc::util::MakeAllPerfTasks<InType, PosternakAIncreaseContrastMPI,
-                                                       PosternakAIncreaseContrastSEQ>(
-    PPC_SETTINGS_posternak_a_increase_contrast);
+const auto kAllPerfTasks =
+    ppc::util::MakeAllPerfTasks<InType, PosternakAIncreaseContrastMPI, PosternakAIncreaseContrastSEQ>(
+        PPC_SETTINGS_posternak_a_increase_contrast);
 
 const auto kGtestValues = ppc::util::TupleToGTestValues(kAllPerfTasks);
 
