@@ -6,15 +6,15 @@
 #include <tuple>
 #include <utility>
 
-#include "posternak_a_count_different_char_in_two_lines/common/include/common.hpp"
-#include "posternak_a_count_different_char_in_two_lines/mpi/include/ops_mpi.hpp"
-#include "posternak_a_count_different_char_in_two_lines/seq/include/ops_seq.hpp"
+#include "posternak_a_increase_contrast/common/include/common.hpp"
+#include "posternak_a_increase_contrast/mpi/include/ops_mpi.hpp"
+#include "posternak_a_increase_contrast/seq/include/ops_seq.hpp"
 #include "util/include/func_test_util.hpp"
 #include "util/include/util.hpp"
 
-namespace posternak_a_count_different_char_in_two_lines {
+namespace posternak_a_increase_contrast {
 
-class PosternakACountDifferentCharInTwoLinesFuncTests : public ppc::util::BaseRunFuncTests<InType, OutType, TestType> {
+class PosternakAIncreaseContrastFuncTests : public ppc::util::BaseRunFuncTests<InType, OutType, TestType> {
  public:
   static std::string PrintTestParam(const TestType &test_param) {
     return std::to_string(std::get<0>(test_param)) + "_" + std::get<1>(test_param);
@@ -126,7 +126,7 @@ class PosternakACountDifferentCharInTwoLinesFuncTests : public ppc::util::BaseRu
 
 namespace {
 
-TEST_P(PosternakACountDifferentCharInTwoLinesFuncTests, CountDifferentCharInTwoLines) {
+TEST_P(PosternakAIncreaseContrastFuncTests, IncreaseContrast) {
   ExecuteTest(GetParam());
 }
 
@@ -151,18 +151,18 @@ const std::array<TestType, 20> kTestParam = {std::make_tuple(1, "one_diff_char")
                                              std::make_tuple(19, "enter"),
                                              std::make_tuple(20, "tab")};
 
-const auto kTestTasksList = std::tuple_cat(ppc::util::AddFuncTask<PosternakACountDifferentCharInTwoLinesMPI, InType>(
-                                               kTestParam, PPC_SETTINGS_posternak_a_count_different_char_in_two_lines),
-                                           ppc::util::AddFuncTask<PosternakACountDifferentCharInTwoLinesSEQ, InType>(
-                                               kTestParam, PPC_SETTINGS_posternak_a_count_different_char_in_two_lines));
+const auto kTestTasksList = std::tuple_cat(ppc::util::AddFuncTask<PosternakAIncreaseContrastMPI, InType>(
+                                               kTestParam, PPC_SETTINGS_posternak_a_increase_contrast),
+                                           ppc::util::AddFuncTask<PosternakAIncreaseContrastSEQ, InType>(
+                                               kTestParam, PPC_SETTINGS_posternak_a_increase_contrast));
 
 const auto kGtestValues = ppc::util::ExpandToValues(kTestTasksList);
 
 const auto kPerfTestName =
-    PosternakACountDifferentCharInTwoLinesFuncTests::PrintFuncTestName<PosternakACountDifferentCharInTwoLinesFuncTests>;
+    PosternakAIncreaseContrastFuncTests::PrintFuncTestName<PosternakAIncreaseContrastFuncTests>;
 
-INSTANTIATE_TEST_SUITE_P(StringTests, PosternakACountDifferentCharInTwoLinesFuncTests, kGtestValues, kPerfTestName);
+INSTANTIATE_TEST_SUITE_P(StringTests, PosternakAIncreaseContrastFuncTests, kGtestValues, kPerfTestName);
 
 }  // namespace
 
-}  // namespace posternak_a_count_different_char_in_two_lines
+}  // namespace posternak_a_increase_contrast

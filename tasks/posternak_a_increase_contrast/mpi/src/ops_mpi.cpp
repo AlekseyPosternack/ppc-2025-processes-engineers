@@ -1,4 +1,4 @@
-#include "posternak_a_count_different_char_in_two_lines/mpi/include/ops_mpi.hpp"
+#include "posternak_a_increase_contrast/mpi/include/ops_mpi.hpp"
 
 #include <mpi.h>
 
@@ -8,28 +8,28 @@
 #include <utility>
 #include <vector>
 
-#include "posternak_a_count_different_char_in_two_lines/common/include/common.hpp"
+#include "posternak_a_increase_contrast/common/include/common.hpp"
 
-namespace posternak_a_count_different_char_in_two_lines {
+namespace posternak_a_increase_contrast {
 
-PosternakACountDifferentCharInTwoLinesMPI::PosternakACountDifferentCharInTwoLinesMPI(const InType &in) {
+PosternakAIncreaseContrastMPI::PosternakAIncreaseContrastMPI(const InType &in) {
   SetTypeOfTask(GetStaticTypeOfTask());
   GetInput() = in;
   GetOutput() = 0;
 }
 
-bool PosternakACountDifferentCharInTwoLinesMPI::ValidationImpl() {
+bool PosternakAIncreaseContrastMPI::ValidationImpl() {
   std::pair<std::string, std::string> &lines = GetInput();
   std::string s1 = lines.first;
   std::string s2 = lines.second;
   return !s1.empty() && !s2.empty();
 }
 
-bool PosternakACountDifferentCharInTwoLinesMPI::PreProcessingImpl() {
+bool PosternakAIncreaseContrastMPI::PreProcessingImpl() {
   return true;
 }
 
-bool PosternakACountDifferentCharInTwoLinesMPI::RunImpl() {
+bool PosternakAIncreaseContrastMPI::RunImpl() {
   int rank = 0;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
@@ -112,8 +112,8 @@ bool PosternakACountDifferentCharInTwoLinesMPI::RunImpl() {
   return true;
 }
 
-bool PosternakACountDifferentCharInTwoLinesMPI::PostProcessingImpl() {
+bool PosternakAIncreaseContrastMPI::PostProcessingImpl() {
   return true;
 }
 
-}  // namespace posternak_a_count_different_char_in_two_lines
+}  // namespace posternak_a_increase_contrast

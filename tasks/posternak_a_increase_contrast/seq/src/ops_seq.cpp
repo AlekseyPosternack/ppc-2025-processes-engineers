@@ -1,30 +1,30 @@
-#include "posternak_a_count_different_char_in_two_lines/seq/include/ops_seq.hpp"
+#include "posternak_a_increase_contrast/seq/include/ops_seq.hpp"
 
 #include <cstddef>
 #include <string>
 #include <utility>
 
-#include "posternak_a_count_different_char_in_two_lines/common/include/common.hpp"
+#include "posternak_a_increase_contrast/common/include/common.hpp"
 
-namespace posternak_a_count_different_char_in_two_lines {
+namespace posternak_a_increase_contrast {
 
-PosternakACountDifferentCharInTwoLinesSEQ::PosternakACountDifferentCharInTwoLinesSEQ(const InType &in) {
+PosternakAIncreaseContrastSEQ::PosternakAIncreaseContrastSEQ(const InType &in) {
   SetTypeOfTask(GetStaticTypeOfTask());
   GetInput() = in;
   GetOutput() = 0;
 }
 
-bool PosternakACountDifferentCharInTwoLinesSEQ::ValidationImpl() {
+bool PosternakAIncreaseContrastSEQ::ValidationImpl() {
   std::pair<std::string, std::string> &lines = GetInput();
   std::string s1 = lines.first;
   std::string s2 = lines.second;
   return !s1.empty() && !s2.empty();
 }
 
-bool PosternakACountDifferentCharInTwoLinesSEQ::PreProcessingImpl() {
+bool PosternakAIncreaseContrastSEQ::PreProcessingImpl() {
   return true;
 }
-bool PosternakACountDifferentCharInTwoLinesSEQ::RunImpl() {
+bool PosternakAIncreaseContrastSEQ::RunImpl() {
   std::pair<std::string, std::string> &lines = GetInput();
   std::string s1 = lines.first;
   std::string s2 = lines.second;
@@ -52,8 +52,8 @@ bool PosternakACountDifferentCharInTwoLinesSEQ::RunImpl() {
   return true;
 }
 
-bool PosternakACountDifferentCharInTwoLinesSEQ::PostProcessingImpl() {
+bool PosternakAIncreaseContrastSEQ::PostProcessingImpl() {
   return true;
 }
 
-}  // namespace posternak_a_count_different_char_in_two_lines
+}  // namespace posternak_a_increase_contrast

@@ -6,11 +6,11 @@
 
 #include "task/include/task.hpp"
 
-namespace posternak_a_count_different_char_in_two_lines {
+namespace posternak_a_increase_contrast {
 
 using InType = std::pair<std::string, std::string>;
 using OutType = int;
 using TestType = std::tuple<int, std::string>;
 using BaseTask = ppc::task::Task<InType, OutType>;
 
-}  // namespace posternak_a_count_different_char_in_two_lines
+}  // namespace posternak_a_increase_contrast
