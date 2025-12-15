@@ -14,6 +14,19 @@
 
 namespace posternak_a_increase_contrast {
 
+// Проверка допустимости округления
+static bool VectorsAlmostEqual(const OutType &a, const OutType &b, unsigned char scale = 1) {
+  if (a.size() != b.size()) {
+    return false;
+  }
+  for (size_t i = 0; i < a.size(); ++i) {
+    if (std::abs(static_cast<int>(a[i]) - static_cast<int>(b[i])) > scale) {
+      return false;
+    }
+  }
+  return true;
+}
+
 class PosternakAIncreaseContrastFuncTests : public ppc::util::BaseRunFuncTests<InType, OutType, TestType> {
  public:
   static std::string PrintTestParam(const TestType &test_param) {
@@ -27,84 +40,45 @@ class PosternakAIncreaseContrastFuncTests : public ppc::util::BaseRunFuncTests<I
 
     switch (test) {
       case 1:
-        input_data_ = std::make_pair("string", "strong");
-        expected_output_ = 1;
+        input_data_ = {50, 100, 150, 200};
+        expected_output_ = {0, 85, 170, 255};
         break;
       case 2:
-        input_data_ = std::make_pair("stringstring", "string");
-        expected_output_ = 6;
+        input_data_ = {10, 200, 50, 180, 30};
+        expected_output_ = {0, 255, 54, 228, 27};
         break;
       case 3:
-        input_data_ = std::make_pair("string", "stringstring");
-        expected_output_ = 6;
+        input_data_ = {120, 130, 125, 128};
+        expected_output_ = {0, 255, 128, 204};
         break;
       case 4:
-        input_data_ = std::make_pair("string", "string");
-        expected_output_ = 0;
+        input_data_ = {70, 160, 90, 200, 110};
+        expected_output_ = {0, 177, 40, 255, 79};
         break;
       case 5:
-        input_data_ = std::make_pair("string", "STRING");
-        expected_output_ = 6;
+        input_data_ = {0, 64, 128, 192, 255};
+        expected_output_ = {0, 64, 128, 192, 255};
         break;
+      // Граничные случаи
       case 6:
-        input_data_ = std::make_pair("x", "string");
-        expected_output_ = 6;
+        input_data_ = {100, 100, 100};
+        expected_output_ = {128, 128, 128};
         break;
       case 7:
-        input_data_ = std::make_pair("string", "x");
-        expected_output_ = 6;
+        input_data_ = {0, 255, 0, 255};
+        expected_output_ = {0, 255, 0, 255};
         break;
       case 8:
-        input_data_ = std::make_pair("s", "g");
-        expected_output_ = 1;
+        input_data_ = {0, 0, 0};
+        expected_output_ = {128, 128, 128};
         break;
       case 9:
-        input_data_ = std::make_pair("s", "s");
-        expected_output_ = 0;
+        input_data_ = {255, 255};
+        expected_output_ = {128, 128};
         break;
       case 10:
-        input_data_ = std::make_pair("-@$%#", "_@%$#");
-        expected_output_ = 3;
-        break;
-      case 11:
-        input_data_ = std::make_pair("strong string", "strong_string");
-        expected_output_ = 1;
-        break;
-      case 12:
-        input_data_ = std::make_pair("12345", "54321");
-        expected_output_ = 4;
-        break;
-      case 13:
-        input_data_ = std::make_pair("12345", "12345");
-        expected_output_ = 0;
-        break;
-      case 14:
-        input_data_ = std::make_pair("7826", "7828");
-        expected_output_ = 1;
-        break;
-      case 15:
-        input_data_ = std::make_pair("s t r i n g", "string");
-        expected_output_ = 10;
-        break;
-      case 16:
-        input_data_ = std::make_pair("1wertyuiopasdfghjkl", "qwertyuiopasdfghjkl");
-        expected_output_ = 1;
-        break;
-      case 17:
-        input_data_ = std::make_pair("qwertyuiopasdfghjkl", "qwertyuiopasdfghjkk");
-        expected_output_ = 1;
-        break;
-      case 18:
-        input_data_ = std::make_pair("qwertyuiopasdfghjkl", "qwertyuiopasdfghjkl");
-        expected_output_ = 0;
-        break;
-      case 19:
-        input_data_ = std::make_pair("str\ning", "string");
-        expected_output_ = 4;
-        break;
-      case 20:
-        input_data_ = std::make_pair("strong\tstring", "strong string");
-        expected_output_ = 1;
+        input_data_ = {255};
+        expected_output_ = {128};
         break;
       default:
         break;
@@ -112,7 +86,11 @@ class PosternakAIncreaseContrastFuncTests : public ppc::util::BaseRunFuncTests<I
   }
 
   bool CheckTestOutputData(OutType &output_data) final {
-    return (expected_output_ == output_data);
+    if (*std::min_element(input_data_.begin(), input_data_.end()) ==
+        *std::max_element(input_data_.begin(), input_data_.end())) {
+      return std::all_of(output_data.begin(), output_data.end(), [](unsigned char v) { return v == 128; });
+    }
+    return VectorsAlmostEqual(output_data, expected_output_, 1);
   }
 
   InType GetTestInputData() final {
@@ -130,26 +108,16 @@ TEST_P(PosternakAIncreaseContrastFuncTests, IncreaseContrast) {
   ExecuteTest(GetParam());
 }
 
-const std::array<TestType, 20> kTestParam = {std::make_tuple(1, "one_diff_char"),
-                                             std::make_tuple(2, "s1_len_bigger_s2_len"),
-                                             std::make_tuple(3, "s1_len_less_s2_len"),
-                                             std::make_tuple(4, "equal_strings"),
-                                             std::make_tuple(5, "diff_reg"),
-                                             std::make_tuple(6, "s1_one_char"),
-                                             std::make_tuple(7, "s2_one_char"),
-                                             std::make_tuple(8, "diff_one_char_strings"),
-                                             std::make_tuple(9, "equal_one_char_strings"),
-                                             std::make_tuple(10, "special_chars"),
-                                             std::make_tuple(11, "string_sith_space"),
-                                             std::make_tuple(12, "nums_reverse"),
-                                             std::make_tuple(13, "equal_nums"),
-                                             std::make_tuple(14, "one_diff_num"),
-                                             std::make_tuple(15, "many_spaces"),
-                                             std::make_tuple(16, "long_strings_diff_begin"),
-                                             std::make_tuple(17, "long_strings_diff_end"),
-                                             std::make_tuple(18, "equal_long_strings"),
-                                             std::make_tuple(19, "enter"),
-                                             std::make_tuple(20, "tab")};
+const std::array<TestType, 10> kTestParam = {std::make_tuple(1, "linear"),
+                                             std::make_tuple(2, "big_amplitude"),
+                                             std::make_tuple(3, "middle_pixels"),
+                                             std::make_tuple(4, "default"),
+                                             std::make_tuple(5, "full_scale"),
+                                             std::make_tuple(6, "one_color"),
+                                             std::make_tuple(7, "black_white_image"),
+                                             std::make_tuple(8, "black_image"),
+                                             std::make_tuple(9, "white_image"),
+                                             std::make_tuple(10, "one_pixel")};
 
 const auto kTestTasksList = std::tuple_cat(ppc::util::AddFuncTask<PosternakAIncreaseContrastMPI, InType>(
                                                kTestParam, PPC_SETTINGS_posternak_a_increase_contrast),
@@ -160,7 +128,7 @@ const auto kGtestValues = ppc::util::ExpandToValues(kTestTasksList);
 
 const auto kPerfTestName = PosternakAIncreaseContrastFuncTests::PrintFuncTestName<PosternakAIncreaseContrastFuncTests>;
 
-INSTANTIATE_TEST_SUITE_P(StringTests, PosternakAIncreaseContrastFuncTests, kGtestValues, kPerfTestName);
+INSTANTIATE_TEST_SUITE_P(VectorTests, PosternakAIncreaseContrastFuncTests, kGtestValues, kPerfTestName);
 
 }  // namespace
 

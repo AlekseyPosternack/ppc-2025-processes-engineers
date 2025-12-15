@@ -11,23 +11,20 @@
 namespace posternak_a_increase_contrast {
 
 class PosternakAIncreaseContrastPerfTests : public ppc::util::BaseRunPerfTests<InType, OutType> {
-  const int kCount_ = 10000000;
-  std::string first_string_;
-  std::string second_string_;
+  const size_t kPixelsCount_ = 4096 * 4096;  // 4к изображение
   InType input_data_;
-  OutType expected_output_{};
 
   void SetUp() override {
-    for (int i = 0; i < kCount_; i++) {
-      first_string_ += "string";
-      second_string_ += "strong";
+    input_data_.resize(kPixelsCount_);
+    for (size_t i = 0; i < kPixelsCount_; i++) {
+      // повторяющийся блок от 100 до 150
+      input_data_[i] = static_cast<unsigned char>(100 + (i % 51));
     }
-    input_data_ = std::make_pair(first_string_, second_string_);
-    expected_output_ = kCount_;
   }
 
   bool CheckTestOutputData(OutType &output_data) final {
-    return expected_output_ == output_data;
+    // считать значения - безумие, поэтому проверяем осмысленность результата
+    return !output_data.empty() && output_data.size() == kPixelsCount_;
   }
 
   InType GetTestInputData() final {

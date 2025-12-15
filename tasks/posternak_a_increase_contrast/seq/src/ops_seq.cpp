@@ -11,44 +11,44 @@ namespace posternak_a_increase_contrast {
 PosternakAIncreaseContrastSEQ::PosternakAIncreaseContrastSEQ(const InType &in) {
   SetTypeOfTask(GetStaticTypeOfTask());
   GetInput() = in;
-  GetOutput() = 0;
+  GetOutput().resize(in.size());
 }
 
 bool PosternakAIncreaseContrastSEQ::ValidationImpl() {
-  std::pair<std::string, std::string> &lines = GetInput();
-  std::string s1 = lines.first;
-  std::string s2 = lines.second;
-  return !s1.empty() && !s2.empty();
+  return !GetInput().empty();
 }
 
 bool PosternakAIncreaseContrastSEQ::PreProcessingImpl() {
   return true;
 }
+
 bool PosternakAIncreaseContrastSEQ::RunImpl() {
-  std::pair<std::string, std::string> &lines = GetInput();
-  std::string s1 = lines.first;
-  std::string s2 = lines.second;
+  const std::vector<unsigned char> &input = GetInput();
+  std::vector<unsigned char> &output = GetOutput();
 
-  int diff_count = 0;
-  size_t min = 0;
-  size_t max = 0;
-  size_t s1_len = s1.length();
-  size_t s2_len = s2.length();
-  if (s1_len >= s2_len) {
-    min = s2_len;
-    max = s1_len;
-  } else {
-    min = s1_len;
-    max = s2_len;
+  unsigned char min_val = *std::min_element(input.begin(), input.end());
+  unsigned char max_val = *std::max_element(input.begin(), input.end());
+
+  if (min_val == max_val) {
+    std::fill(output.begin(), output.end(), 128);
+    return true;
   }
-  for (size_t i = 0; i < min; i++) {
-    if (s1[i] != s2[i]) {
-      diff_count++;
+
+  double scale = 255.0 / (max_val - min_val);
+
+  for (size_t i = 0; i < input.size(); ++i) {
+    double new_pixel = static_cast<unsigned char>((input[i] - min_val) * scale + 0.5);
+
+    if (new_pixel < 0.0) {
+      new_pixel = 0.0;
     }
+    if (new_pixel > 255.0) {
+      new_pixel = 255.0;
+    }
+
+    output[i] = static_cast<unsigned char>(new_pixel);
   }
 
-  diff_count += static_cast<int>(max - min);
-  GetOutput() = diff_count;
   return true;
 }
 
