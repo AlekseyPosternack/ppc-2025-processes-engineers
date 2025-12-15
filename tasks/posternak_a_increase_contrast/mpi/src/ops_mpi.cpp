@@ -3,7 +3,7 @@
 #include <mpi.h>
 
 #include <algorithm>
-#include <utility>
+#include <cmath>
 #include <vector>
 
 #include "posternak_a_increase_contrast/common/include/common.hpp"
