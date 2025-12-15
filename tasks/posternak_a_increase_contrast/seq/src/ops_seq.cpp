@@ -1,8 +1,9 @@
 #include "posternak_a_increase_contrast/seq/include/ops_seq.hpp"
 
+#include <algorithm>
+#include <cmath>
 #include <cstddef>
-#include <string>
-#include <utility>
+#include <vector>
 
 #include "posternak_a_increase_contrast/common/include/common.hpp"
 
@@ -26,25 +27,21 @@ bool PosternakAIncreaseContrastSEQ::RunImpl() {
   const std::vector<unsigned char> &input = GetInput();
   std::vector<unsigned char> &output = GetOutput();
 
-  unsigned char min_val = *std::min_element(input.begin(), input.end());
-  unsigned char max_val = *std::max_element(input.begin(), input.end());
+  unsigned char min_val = *std::ranges::min_element(input);
+  unsigned char max_val = *std::ranges::max_element(input);
 
   if (min_val == max_val) {
-    std::fill(output.begin(), output.end(), 128);
+    std::ranges::fill(output, 128);
     return true;
   }
 
-  double scale = 255.0 / (max_val - min_val);
+  double scale = 255.0 / static_cast<double>(max_val - min_val);
 
   for (size_t i = 0; i < input.size(); ++i) {
-    double new_pixel = static_cast<unsigned char>((input[i] - min_val) * scale + 0.5);
-
-    if (new_pixel < 0.0) {
-      new_pixel = 0.0;
-    }
-    if (new_pixel > 255.0) {
-      new_pixel = 255.0;
-    }
+    double new_pixel = static_cast<double>(input[i] - min_val) * scale;
+    new_pixel = std::round(new_pixel);
+    new_pixel = std::max(new_pixel, 0.0);
+    new_pixel = std::min(new_pixel, 255.0);
 
     output[i] = static_cast<unsigned char>(new_pixel);
   }

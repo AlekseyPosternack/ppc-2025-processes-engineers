@@ -1,7 +1,6 @@
 #include <gtest/gtest.h>
 
-#include <string>
-#include <utility>
+#include <cstddef>
 
 #include "posternak_a_increase_contrast/common/include/common.hpp"
 #include "posternak_a_increase_contrast/mpi/include/ops_mpi.hpp"
@@ -11,7 +10,7 @@
 namespace posternak_a_increase_contrast {
 
 class PosternakAIncreaseContrastPerfTests : public ppc::util::BaseRunPerfTests<InType, OutType> {
-  const size_t kPixelsCount_ = 4096 * 4096;  // 4к изображение
+  const size_t kPixelsCount_ = static_cast<size_t>(4096) * 4096;  // 4к изображение
   InType input_data_;
 
   void SetUp() override {

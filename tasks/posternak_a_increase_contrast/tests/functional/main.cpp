@@ -1,10 +1,11 @@
 #include <gtest/gtest.h>
 
+#include <algorithm>
 #include <array>
+#include <cmath>
 #include <cstddef>
 #include <string>
 #include <tuple>
-#include <utility>
 
 #include "posternak_a_increase_contrast/common/include/common.hpp"
 #include "posternak_a_increase_contrast/mpi/include/ops_mpi.hpp"
@@ -86,9 +87,8 @@ class PosternakAIncreaseContrastFuncTests : public ppc::util::BaseRunFuncTests<I
   }
 
   bool CheckTestOutputData(OutType &output_data) final {
-    if (*std::min_element(input_data_.begin(), input_data_.end()) ==
-        *std::max_element(input_data_.begin(), input_data_.end())) {
-      return std::all_of(output_data.begin(), output_data.end(), [](unsigned char v) { return v == 128; });
+    if (*std::ranges::min_element(input_data_) == *std::ranges::max_element(input_data_)) {
+      return std::ranges::all_of(output_data, [](unsigned char v) { return v == 128; });
     }
     return VectorsAlmostEqual(output_data, expected_output_, 1);
   }
@@ -99,7 +99,7 @@ class PosternakAIncreaseContrastFuncTests : public ppc::util::BaseRunFuncTests<I
 
  private:
   InType input_data_;
-  OutType expected_output_{};
+  OutType expected_output_;
 };
 
 namespace {
