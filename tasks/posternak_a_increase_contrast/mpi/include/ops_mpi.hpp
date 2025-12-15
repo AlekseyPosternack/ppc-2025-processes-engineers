@@ -21,10 +21,9 @@ class PosternakAIncreaseContrastMPI : public BaseTask {
   bool PostProcessingImpl() override;
 
   std::vector<unsigned char> ScatterInputData(int rank, int size, int data_len);
-  void FindGlobalMinMax(const std::vector<unsigned char> &proc_part, unsigned char *data_min,
-                               unsigned char *data_max);
+  void FindGlobalMinMax(const std::vector<unsigned char> &proc_part, unsigned char *data_min, unsigned char *data_max);
   std::vector<unsigned char> ApplyContrast(const std::vector<unsigned char> &proc_part, unsigned char data_min,
-                                                  unsigned char data_max);
+                                           unsigned char data_max);
 };
 
 }  // namespace posternak_a_increase_contrast
