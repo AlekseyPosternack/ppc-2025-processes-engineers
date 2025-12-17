@@ -34,21 +34,22 @@ bool PosternakAIncreaseContrastMPI::RunImpl() {
   if (rank == 0) {
     data_len = static_cast<int>(GetInput().size());
   }
+
+  // Рассылаем процессам размер данных
   MPI_Bcast(&data_len, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
-  if (data_len == 0) {
-    GetOutput().clear();
-    return true;
-  }
-
+  // Раздаем локальные данные всем процессам
   std::vector<unsigned char> proc_part = ScatterInputData(rank, size, data_len);
 
+  // Узнаем максимальное и минимальное значение пикселей и сообщаем об этом всем процессам
   unsigned char data_min = 0;
   unsigned char data_max = 0;
   FindGlobalMinMax(proc_part, &data_min, &data_max);
 
+  // Преобразование пикселей процессами
   std::vector<unsigned char> local_output = ApplyContrast(proc_part, data_min, data_max);
 
+  // Получаем данные о частях
   int local_size = data_len / size;
   int remainder = data_len % size;
   std::vector<int> counts(size);
@@ -60,6 +61,7 @@ bool PosternakAIncreaseContrastMPI::RunImpl() {
     start += counts[i];
   }
 
+  // Рассылаем результат всем процессам
   GetOutput().resize(data_len);
   MPI_Allgatherv(local_output.data(), static_cast<int>(local_output.size()), MPI_UNSIGNED_CHAR, GetOutput().data(),
                  counts.data(), step.data(), MPI_UNSIGNED_CHAR, MPI_COMM_WORLD);
