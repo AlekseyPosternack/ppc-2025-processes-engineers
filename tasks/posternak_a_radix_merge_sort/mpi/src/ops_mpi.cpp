@@ -33,7 +33,7 @@ bool PosternakARadixMergeSortMPI::RunImpl() {
 
   std::vector<int> input_local;
   int total_n = 0;
-  const std::vector<int>* root_input_ptr = nullptr;
+  const std::vector<int> *root_input_ptr = nullptr;
 
   if (world_rank == 0) {
     input_local = GetInput();
@@ -61,15 +61,14 @@ bool PosternakARadixMergeSortMPI::RunImpl() {
   }
 
   input_local.resize(my_size);
-  
+
   // Fix: Separate the send buffer logic to avoid ternary operator with nullptr
-  const int* sendbuf = nullptr;
+  const int *sendbuf = nullptr;
   if (world_rank == 0) {
     sendbuf = root_input_ptr->data();
   }
-  
-  MPI_Scatterv(sendbuf, counts.data(), displs.data(), MPI_INT, 
-               input_local.data(), my_size, MPI_INT, 0, MPI_COMM_WORLD);
+
+  MPI_Scatterv(sendbuf, counts.data(), displs.data(), MPI_INT, input_local.data(), my_size, MPI_INT, 0, MPI_COMM_WORLD);
 
   std::vector<uint32_t> unsigned_data(my_size);
   for (int i = 0; i < my_size; i++) {
