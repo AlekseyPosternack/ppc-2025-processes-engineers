@@ -33,12 +33,11 @@ bool PosternakARadixMergeSortMPI::RunImpl() {
 
   std::vector<int> input_local;
   int total_n = 0;
-  const std::vector<int> *root_input_ptr = nullptr;
+  std::vector<int> root_input;
 
   if (world_rank == 0) {
-    input_local = GetInput();
-    total_n = input_local.size();
-    root_input_ptr = &GetInput();
+    root_input = GetInput();
+    total_n = root_input.size();
   }
 
   MPI_Bcast(&total_n, 1, MPI_INT, 0, MPI_COMM_WORLD);
@@ -62,13 +61,13 @@ bool PosternakARadixMergeSortMPI::RunImpl() {
 
   input_local.resize(my_size);
 
-  // Fix: Separate the send buffer logic to avoid ternary operator with nullptr
-  const int *sendbuf = nullptr;
   if (world_rank == 0) {
-    sendbuf = root_input_ptr->data();
+    MPI_Scatterv(root_input.data(), counts.data(), displs.data(), MPI_INT, input_local.data(), my_size, MPI_INT, 0,
+                 MPI_COMM_WORLD);
+  } else {
+    MPI_Scatterv(nullptr, counts.data(), displs.data(), MPI_INT, input_local.data(), my_size, MPI_INT, 0,
+                 MPI_COMM_WORLD);
   }
-
-  MPI_Scatterv(sendbuf, counts.data(), displs.data(), MPI_INT, input_local.data(), my_size, MPI_INT, 0, MPI_COMM_WORLD);
 
   std::vector<uint32_t> unsigned_data(my_size);
   for (int i = 0; i < my_size; i++) {
@@ -102,18 +101,20 @@ bool PosternakARadixMergeSortMPI::RunImpl() {
 
   std::vector<int> global_result;
   if (world_rank == 0) {
-    std::vector<std::vector<int>> chunks(world_size);
-    chunks[0] = local_sorted;
+    std::vector<std::vector<int>> chunks;
+    chunks.reserve(world_size);
+
+    chunks.push_back(std::move(local_sorted));
 
     for (int src = 1; src < world_size; src++) {
-      chunks[src].resize(counts[src]);
-      MPI_Recv(chunks[src].data(), counts[src], MPI_INT, src, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+      std::vector<int> remote_chunk(counts[src]);
+      MPI_Recv(remote_chunk.data(), counts[src], MPI_INT, src, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+      chunks.push_back(std::move(remote_chunk));
     }
 
-    global_result = chunks[0];
+    global_result = std::move(chunks[0]);
     std::vector<int> tmp;
-    for (int i = 1; i < world_size; i++) {
-      tmp.clear();
+    for (size_t i = 1; i < chunks.size(); i++) {
       tmp.resize(global_result.size() + chunks[i].size());
       std::merge(global_result.begin(), global_result.end(), chunks[i].begin(), chunks[i].end(), tmp.begin());
       global_result.swap(tmp);
