@@ -142,15 +142,13 @@ const std::array<TestType, 18> kTestParam = {std::make_tuple(1, "mixed_positive"
                                              std::make_tuple(17, "one_negative_number"),
                                              std::make_tuple(18, "limits_numbers")};
 
-const auto kTestTasksList = std::tuple_cat(ppc::util::AddFuncTask<PosternakARadixMergeSortMPI, InType>(
-                                               kTestParam, PPC_SETTINGS_posternak_a_radix_merge_sort),
-                                           ppc::util::AddFuncTask<PosternakARadixMergeSortSEQ, InType>(
-                                               kTestParam, PPC_SETTINGS_posternak_a_radix_merge_sort));
+const auto kTestTasksList = std::tuple_cat(
+    ppc::util::AddFuncTask<PosternakARadixMergeSortMPI, InType>(kTestParam, PPC_SETTINGS_posternak_a_radix_merge_sort),
+    ppc::util::AddFuncTask<PosternakARadixMergeSortSEQ, InType>(kTestParam, PPC_SETTINGS_posternak_a_radix_merge_sort));
 
 const auto kGtestValues = ppc::util::ExpandToValues(kTestTasksList);
 
-const auto kPerfTestName =
-    PosternakARadixMergeSortFuncTests::PrintFuncTestName<PosternakARadixMergeSortFuncTests>;
+const auto kPerfTestName = PosternakARadixMergeSortFuncTests::PrintFuncTestName<PosternakARadixMergeSortFuncTests>;
 
 INSTANTIATE_TEST_SUITE_P(IntTests, PosternakARadixMergeSortFuncTests, kGtestValues, kPerfTestName);
 

@@ -18,8 +18,8 @@ class PosternakARadixMergeSortMPI : public BaseTask {
   bool RunImpl() override;
   bool PostProcessingImpl() override;
 
-  void Merge(std::vector<int>& array, int left, int mid, int right, int radix);
-  void MergeSort(std::vector<int>& array, int left, int right, int radix);
+  void Merge(std::vector<int> &array, int left, int mid, int right, int radix);
+  void MergeSort(std::vector<int> &array, int left, int right, int radix);
 };
 
 }  // namespace posternak_a_radix_merge_sort

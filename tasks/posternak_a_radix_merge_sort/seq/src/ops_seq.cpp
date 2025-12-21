@@ -1,10 +1,10 @@
 #include "posternak_a_radix_merge_sort/seq/include/ops_seq.hpp"
 
 #include <algorithm>
-#include <cstddef>
 #include <cmath>
+#include <cstddef>
+#include <cstdint>
 #include <vector>
-#include <cstdint> 
 
 #include "posternak_a_radix_merge_sort/common/include/common.hpp"
 
@@ -24,7 +24,7 @@ bool PosternakARadixMergeSortSEQ::PreProcessingImpl() {
 }
 
 bool PosternakARadixMergeSortSEQ::RunImpl() {
-  const std::vector<int>& input = GetInput();
+  const std::vector<int> &input = GetInput();
   const int n = static_cast<int>(input.size());
 
   std::vector<uint32_t> unsigned_data(n);
@@ -59,7 +59,8 @@ bool PosternakARadixMergeSortSEQ::RunImpl() {
 
   std::vector<int> sorted_output(n);
   for (int i = 0; i < n; i++) {
-    sorted_output[i] = static_cast<uint32_t>(unsigned_data[i]) ^ 0x80000000u;;
+    sorted_output[i] = static_cast<uint32_t>(unsigned_data[i]) ^ 0x80000000u;
+    ;
   }
 
   GetOutput() = std::move(sorted_output);

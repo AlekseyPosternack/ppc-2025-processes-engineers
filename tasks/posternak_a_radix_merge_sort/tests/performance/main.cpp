@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 
-#include <vector>
-#include <utility>
 #include <algorithm>
+#include <utility>
+#include <vector>
 
 #include "posternak_a_radix_merge_sort/common/include/common.hpp"
 #include "posternak_a_radix_merge_sort/mpi/include/ops_mpi.hpp"
@@ -36,21 +36,21 @@ class PosternakARadixMergeSortPerfTest : public ppc::util::BaseRunPerfTests<InTy
 
   bool CheckTestOutputData(OutType &output_data) final {
     if (input_data_.size() != output_data.size()) {
-        return false;
+      return false;
     }
-    
+
     // Проверяем только что массив отсортирован
     for (size_t i = 1; i < output_data.size(); i += 1000) {  // Проверяем каждую 1000-ю пару
-        if (output_data[i] < output_data[i - 1]) {
-            return false;
-        }
+      if (output_data[i] < output_data[i - 1]) {
+        return false;
+      }
     }
-    
+
     // Проверяем первый и последний элементы
     // Сначала находим реальные min и max во входном массиве
     int real_min = *std::min_element(input_data_.begin(), input_data_.end());
     int real_max = *std::max_element(input_data_.begin(), input_data_.end());
-    
+
     return (output_data[0] == real_min) && (output_data[output_data.size() - 1] == real_max);
   }
 
@@ -63,9 +63,9 @@ TEST_P(PosternakARadixMergeSortPerfTest, RunPerfModes) {
   ExecuteTest(GetParam());
 }
 
-const auto kAllPerfTasks = ppc::util::MakeAllPerfTasks<InType, PosternakARadixMergeSortMPI,
-                                                       PosternakARadixMergeSortSEQ>(
-    PPC_SETTINGS_posternak_a_radix_merge_sort);
+const auto kAllPerfTasks =
+    ppc::util::MakeAllPerfTasks<InType, PosternakARadixMergeSortMPI, PosternakARadixMergeSortSEQ>(
+        PPC_SETTINGS_posternak_a_radix_merge_sort);
 
 const auto kGtestValues = ppc::util::TupleToGTestValues(kAllPerfTasks);
 
