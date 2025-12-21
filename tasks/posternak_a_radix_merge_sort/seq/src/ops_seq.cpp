@@ -1,6 +1,7 @@
 #include "posternak_a_radix_merge_sort/seq/include/ops_seq.hpp"
 
 #include <cmath>
+#include <cstddef>
 #include <cstdint>
 #include <utility>
 #include <vector>
@@ -40,7 +41,7 @@ bool PosternakARadixMergeSortSEQ::RunImpl() {
     std::vector<int> count(256, 0);
 
     for (uint32_t value : unsigned_data) {
-      const uint8_t current_byte = static_cast<uint8_t>((value >> (byte_index * 8)) & kByteMask);
+      const auto current_byte = static_cast<uint8_t>((value >> (byte_index * 8)) & kByteMask);
       ++count[current_byte];
     }
 
@@ -49,7 +50,7 @@ bool PosternakARadixMergeSortSEQ::RunImpl() {
     }
 
     for (int i = n - 1; i >= 0; i--) {
-      const uint8_t current_byte =
+      const auto current_byte =
           static_cast<uint8_t>((unsigned_data[static_cast<size_t>(i)] >> (byte_index * 8)) & kByteMask);
       buffer[static_cast<size_t>(--count[current_byte])] = unsigned_data[static_cast<size_t>(i)];
     }

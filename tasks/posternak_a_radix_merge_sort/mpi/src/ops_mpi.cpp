@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstddef>
 #include <cstdint>
 #include <utility>
 #include <vector>
@@ -40,7 +41,7 @@ std::vector<uint32_t> PosternakARadixMergeSortMPI::RadixSortLocal(std::vector<in
   for (int byte_index = 0; byte_index < kNumBytes; byte_index++) {
     std::vector<int> count(256, 0);
     for (uint32_t val : unsigned_data) {
-      const uint8_t b = static_cast<uint8_t>((val >> (byte_index * 8)) & kByteMask);
+      const auto b = static_cast<uint8_t>((val >> (byte_index * 8)) & kByteMask);
       ++count[b];
     }
 
@@ -49,7 +50,7 @@ std::vector<uint32_t> PosternakARadixMergeSortMPI::RadixSortLocal(std::vector<in
     }
 
     for (int i = static_cast<int>(unsigned_data.size()) - 1; i >= 0; i--) {
-      const uint8_t b = static_cast<uint8_t>((unsigned_data[i] >> (byte_index * 8)) & kByteMask);
+      const auto b = static_cast<uint8_t>((unsigned_data[i] >> (byte_index * 8)) & kByteMask);
       buffer[--count[b]] = unsigned_data[i];
     }
 
