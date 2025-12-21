@@ -21,7 +21,7 @@ class PosternakARadixMergeSortMPI : public BaseTask {
   bool RunImpl() override;
   bool PostProcessingImpl() override;
 
-  std::vector<uint32_t> RadixSortLocal(std::vector<int> &data);
+  static std::vector<uint32_t> RadixSortLocal(std::vector<int> &data);
   static std::vector<int> ConvertToSigned(const std::vector<uint32_t> &unsigned_data);
   static void ComputeCountsAndDisplacements(int total_n, int world_size, std::vector<int> &counts,
                                             std::vector<int> &displs);
