@@ -1,10 +1,10 @@
 #include <gtest/gtest.h>
 
 #include <array>
+#include <climits>
 #include <cstddef>
 #include <string>
 #include <tuple>
-#include <utility>
 
 #include "posternak_a_radix_merge_sort/common/include/common.hpp"
 #include "posternak_a_radix_merge_sort/mpi/include/ops_mpi.hpp"
@@ -114,7 +114,7 @@ class PosternakARadixMergeSortFuncTests : public ppc::util::BaseRunFuncTests<InT
 
  private:
   InType input_data_;
-  OutType expected_output_{};
+  OutType expected_output_;
 };
 
 namespace {

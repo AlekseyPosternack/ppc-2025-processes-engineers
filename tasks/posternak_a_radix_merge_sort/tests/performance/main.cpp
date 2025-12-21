@@ -1,8 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <algorithm>
-#include <utility>
-#include <vector>
+#include <cstddef>
 
 #include "posternak_a_radix_merge_sort/common/include/common.hpp"
 #include "posternak_a_radix_merge_sort/mpi/include/ops_mpi.hpp"
@@ -20,7 +19,7 @@ class PosternakARadixMergeSortPerfTest : public ppc::util::BaseRunPerfTests<InTy
   void SetUp() override {
     input_data_.clear();
     input_data_.reserve(kCount_);
-    for (int i = 0; i < kCount_; i++) {
+    for (int i = 0; i < kCount_; ++i) {
       int value = 0;
       if (i % 2 == 0) {
         value = -i;
@@ -39,17 +38,15 @@ class PosternakARadixMergeSortPerfTest : public ppc::util::BaseRunPerfTests<InTy
       return false;
     }
 
-    // Проверяем только что массив отсортирован
-    for (size_t i = 1; i < output_data.size(); i += 1000) {  // Проверяем каждую 1000-ю пару
+    for (std::size_t i = 1; i < output_data.size(); i += 1000) {  // Проверяем каждую 1000-ю пару
       if (output_data[i] < output_data[i - 1]) {
         return false;
       }
     }
 
     // Проверяем первый и последний элементы
-    // Сначала находим реальные min и max во входном массиве
-    int real_min = *std::min_element(input_data_.begin(), input_data_.end());
-    int real_max = *std::max_element(input_data_.begin(), input_data_.end());
+    const auto real_min = *std::ranges::min_element(input_data_);
+    const auto real_max = *std::ranges::max_element(input_data_);
 
     return (output_data[0] == real_min) && (output_data[output_data.size() - 1] == real_max);
   }

@@ -1,5 +1,8 @@
 #pragma once
 
+#include <cstdint>
+#include <vector>
+
 #include "posternak_a_radix_merge_sort/common/include/common.hpp"
 #include "task/include/task.hpp"
 
@@ -18,8 +21,10 @@ class PosternakARadixMergeSortMPI : public BaseTask {
   bool RunImpl() override;
   bool PostProcessingImpl() override;
 
-  void Merge(std::vector<int> &array, int left, int mid, int right, int radix);
-  void MergeSort(std::vector<int> &array, int left, int right, int radix);
+  std::vector<uint32_t> RadixSortLocal(std::vector<int> &data);
+  std::vector<int> ConvertToSigned(const std::vector<uint32_t> &unsigned_data);
+  void ComputeCountsAndDisplacements(int total_n, int world_size, std::vector<int> &counts, std::vector<int> &displs);
+  void MergeChunks(std::vector<int> &global_result, const std::vector<std::vector<int>> &chunks);
 };
 
 }  // namespace posternak_a_radix_merge_sort
