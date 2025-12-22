@@ -23,9 +23,8 @@ class PosternakARadixMergeSortMPI : public BaseTask {
 
   static std::vector<uint32_t> RadixSortLocal(std::vector<int> &data);
   static std::vector<int> ConvertToSigned(const std::vector<uint32_t> &unsigned_data);
-  static void CalculateCountsAndOffsets(int total_n, int world_size, std::vector<int> &counts,
-                                        std::vector<int> &displs);
-  static void MergeSortedParts(std::vector<int> &global_result, const std::vector<std::vector<int>> &chunks);
+  static void CalculateCountsAndOffsets(int input_len, int size, std::vector<int> &counts, std::vector<int> &offset);
+  static void MergeSortedParts(std::vector<int> &result, const std::vector<std::vector<int>> &sorted_proc_parts);
 };
 
 }  // namespace posternak_a_radix_merge_sort
