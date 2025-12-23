@@ -109,10 +109,6 @@ bool PosternakARadixMergeSortMPI::RunImpl() {
   }
 
   MPI_Bcast(&input_len, 1, MPI_INT, 0, MPI_COMM_WORLD);
-  if (input_len == 0) {
-    GetOutput() = std::vector<int>();
-    return true;
-  }
 
   std::vector<int> counts;
   std::vector<int> offset;
